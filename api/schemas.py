@@ -1,11 +1,10 @@
-# api/schemas.py
 from pydantic import BaseModel, Field
 from typing import List
 import datetime
 
 class WindRequest(BaseModel):
-    date: datetime.date = Field(..., description="Date of interest (YYYY-MM-DD)")
-    polygon: List[List[float]] = Field(..., description="Coast of Gujarat coordinates [[lon, lat], ...]")
+    date: datetime.date = Field(..., description = "Date of interest (YYYY-MM-DD)")
+    polygon: List[List[float]] = Field(..., description = "Coast of Gujarat coordinates [[lon, lat], ...]")
     
 class VectorPoint(BaseModel):
     lat: float
