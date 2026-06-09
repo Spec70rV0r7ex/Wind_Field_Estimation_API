@@ -2,7 +2,6 @@ import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    # API Metadata
     PROJECT_NAME: str = "SAR Wind Gujarat API"
     VERSION: str = "1.0.0"
 
