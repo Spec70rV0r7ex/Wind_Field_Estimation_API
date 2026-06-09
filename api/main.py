@@ -12,8 +12,8 @@ from utils.windspeed import invert_cmod5
 from model.postprocess import apply_land_mask, filter_outliers_20deg, apply_180_dealiasing, interpolate_missing_vectors
 
 app = FastAPI(
-    title = "SAR Coastal Wind API - Coast of Gujarat",
-    description = "High-resolution ocean wind field vectors using ResNet and Sentinel-1 SAR imagery."
+    title = "SAR Coastal Wind API : Coast of Gujarat",
+    description = "High Resolution ocean wind field vectors using ResNet and Sentinel-1 SAR imagery."
 )
 
 print("Loading M64RN4 Model Weights...")
@@ -26,9 +26,7 @@ async def get_wind_field(request: WindRequest):
     try:
         date_str = request.date.strftime("%Y-%m-%d")
         
-        (lats, lons, sar_patches, land_masks, inc_angles, vv_db, era5_ref_angle, era5_u_array, era5_v_array) = fetch_inference_data(
-            request.polygon, date_str
-        )
+        (lats, lons, sar_patches, land_masks, inc_angles, vv_db, era5_ref_angle, era5_u_array, era5_v_array) = fetch_inference_data(request.polygon, date_str)
         
         valid_indices = []
         for i in range(len(sar_patches)):
