@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 class ResidualBlock(nn.Module):
-    """Standard RNB (Residual Network Block) used in M64RN4"""
     def __init__(self, channels):
         super(ResidualBlock, self).__init__()
         self.conv1 = nn.Conv2d(channels, channels, kernel_size = 3, padding = 1, bias = False)
@@ -23,10 +23,6 @@ class ResidualBlock(nn.Module):
         return out
 
 class M64RN4(nn.Module):
-    """
-    Zanchetta & Zecchetto architecture: 
-    4 Residual Blocks, 64 Channels, outputting sin and cos of wind direction.
-    """
     def __init__(self):
         super(M64RN4, self).__init__()
         self.in_channels = 1
@@ -53,4 +49,4 @@ class M64RN4(nn.Module):
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.fc(x)
-        return x
+        return F.normalize(x, p = 2, dim = 1)
