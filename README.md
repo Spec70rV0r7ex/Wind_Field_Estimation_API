@@ -128,7 +128,7 @@ Once the JSON is saved in your `data/` directory, you can generate two distinct 
 * **Raw Data Mapping:** Run `notebooks/demo_gujarat.py` to generate the **Raw SAR-derived wind vector field over Gujarat**. This plot accurately displays the un-smoothed, micro-scale wind vectors exactly as captured and predicted by the ResNet model.
 * **Operational Mapping:** Run the `run_plot.py` script via your terminal to generate an **Interpolated wind field surface map of the Gulf of Kutch**. This applies a uniform interpolation grid to create a smooth, continuous background color gradient with perfectly spaced arrows.
 ```bash
-python run_plot.py data/gujarat_wind_2024-02-09.json output_map.png
+python run_plot.py data/gujarat_wind_20240209.json output_map.png
 
 ```
 
