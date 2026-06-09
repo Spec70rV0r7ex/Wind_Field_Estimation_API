@@ -8,13 +8,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader, random_split
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
-try:
-    from google.colab import drive
-    drive.mount('/content/drive')
-    SAVE_DIR = '/content/drive/MyDrive/SAR_Wind_Weights'
-except ImportError:
-    SAVE_DIR = './weights'
-
+SAVE_DIR = './weights'
 os.makedirs(SAVE_DIR, exist_ok = True)
 SAVE_PATH = os.path.join(SAVE_DIR, 'm64rn4_paper_weights.pth')
 
@@ -24,7 +18,6 @@ class ZanchettaLoss(nn.Module):
 
     def forward(self, preds, targets):
         cos_diff = torch.sum(preds * targets, dim = 1)
-
         loss = 1.0 - torch.square(cos_diff)
         return torch.mean(loss)
 
@@ -64,7 +57,8 @@ class M64RN4(nn.Module):
         return F.normalize(x, p = 2, dim = 1)
 
 class SARWindDataset(Dataset):
-    def __init__(self, data_dir = '/content/drive/MyDrive/SAR_Wind_Dataset_2024'):
+    # Updated default data_dir to point to your local data folder
+    def __init__(self, data_dir = './data/SAR_Wind_Dataset_2024'):
         print("Loading 49x49 SAR Dataset...")
         self.data = np.load(os.path.join(data_dir, 'SAR_X_49_2024.npy'))
         self.labels = np.load(os.path.join(data_dir, 'WIND_Y_49_2024.npy'))
@@ -114,17 +108,22 @@ def angular_error(preds, targets):
 
 def train_model():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Training initialized on device: {device}")
+    
     model = M64RN4().to(device)
     
     criterion = ZanchettaLoss()
     optimizer = optim.Adam(model.parameters(), lr = 0.001) # type: ignore
     scheduler = ReduceLROnPlateau(optimizer, mode = 'min', factor = 0.5, patience = 7)
+    
     full_dataset = SARWindDataset()
     train_size = int(0.9 * len(full_dataset))
     val_size = len(full_dataset) - train_size
     train_dataset, val_dataset = random_split(full_dataset, [train_size, val_size])
+    
     train_loader = DataLoader(train_dataset, batch_size = 64, shuffle = True, num_workers = 2)
     val_loader = DataLoader(val_dataset, batch_size = 64, shuffle = False, num_workers = 2)
+    
     epochs = 200
     best_val_loss = float('inf')
     epochs_no_improve = 0
@@ -166,7 +165,7 @@ def train_model():
 
         scheduler.step(val_loss)
 
-        print(f"Ep {epoch+1:03d} | Loss: {train_loss:.4f} / Val Loss: {val_loss:.4f} (Err: {val_ang_err:.1f}°)")
+        print(f"Ep {epoch+1:03d} | Loss: {train_loss:.4f} / Val Loss: {val_loss:.4f} (Err: {val_ang_err:.1f}°) | Time: {time.time() - start_time:.1f}s")
 
         if val_loss < best_val_loss:
             best_val_loss = val_loss
