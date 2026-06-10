@@ -4,10 +4,11 @@ import numpy as np
 import sys
 import os
 
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
+
 from api.schemas import VectorPoint
 from utils.visualization import plot_wind_field
 
-sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
 from utils.validation_math import calculate_metrics
 from utils.visualization import plot_wind_field
 from api.schemas import VectorPoint
@@ -27,9 +28,9 @@ metrics = calculate_metrics(pred_speeds, pred_dirs, true_speeds, true_dirs)
 
 validation_df = pd.DataFrame({
     'Metric': [
-        'Bias (β)', 
-        'MAE (Mean Abs Error)', 
-        'cRMSd / RMSE', 
+        'Bias', 
+        'MAE', 
+        'RMSE', 
         'Linear Correlation'
     ],
     'Wind Speed (m/s)': [
