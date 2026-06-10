@@ -31,15 +31,15 @@ polygon = [
 
 st.title("SAR Coastal Wind Retrieval Dashboard")
 st.markdown("""
-This application interfaces with the pipeline's FastAPI backend to retrieve Sentinel-1 SAR imagery from Google Earth Engine, 
-process it through the M64RN4 Deep Residual Network, and output a high-resolution, operationally interpolated wind field using CMOD5 inversion.
+This application interfaces with the pipeline's FastAPI backend to retrieve Sentinel 1 SAR imagery from Google Earth Engine, 
+process it through the M64RN4 Deep Residual Network, and output a high resolution, operationally interpolated wind field using CMOD5 inversion.
 """)
 
 st.divider()
 
 if st.button("Execute SAR Pipeline", type = "primary"):
     with st.status("Running Wind Retrieval Pipeline...", expanded = True) as status:
-        st.write("Pinging FastAPI backend (http://127.0.0.1:8000)...")
+        st.write("Pinging FastAPI backend...")
         url = "http://127.0.0.1:8000/api/v1/wind-field"
 
         payload = {
@@ -50,8 +50,8 @@ if st.button("Execute SAR Pipeline", type = "primary"):
         try:
             response = requests.post(url, json = payload)            
             if response.status_code == 200:
-                st.write("✅ SAR extraction and neural network processing complete!")
-                st.write("🗺️ Interpolating grid and generating Cartopy visualization...")
+                st.write("SAR extraction and neural network processing complete!")
+                st.write("Interpolating grid and generating Cartopy visualization...")
                 json_filename = f"data/gujarat_wind_{target_date.strftime('%Y-%m-%d')}.json"
                 output_image = "output_map.png"
                 os.system(f"python run_plot.py {json_filename} {output_image}")
