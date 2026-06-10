@@ -1,14 +1,14 @@
-# High-Resolution SAR Coastal Wind Retrieval Pipeline
+# High Resolution SAR Coastal Wind Retrieval Pipeline
 
 ## Project Aim
 
-This pipeline automates the extraction and processing of high-resolution ocean surface wind fields from Sentinel-1 Synthetic Aperture Radar (SAR) imagery. Designed specifically for complex coastal zones, the system leverages a PyTorch-based Deep Residual Network (M64RN4) and a modified CMOD5 Geophysical Model Function (GMF) to invert raw radar backscatter into accurate meteorological wind vector fields.
+This pipeline automates the extraction and processing of high-resolution ocean surface wind fields from Sentinel-1 Synthetic Aperture Radar imagery. Designed specifically for complex coastal zones, the system leverages a PyTorch-based Deep Residual Network and a modified CMOD5 Geophysical Model Function to invert raw radar backscatter into accurate meteorological wind vector fields.
 
 ### Key Scientific & Engineering Features
 
-* **Dynamic Earth Engine Mosaicking:** Programmatically bypasses Google Earth Engine's (GEE) 10 MB payload restrictions. The pipeline uses flat 2D raster extractions via `sampleRectangle` with dynamic spatial tiling and strict temporal matching to prevent memory allocation failures over long swaths.
-* **Morphological Coastal Buffering:** Employs `scipy.ndimage.binary_dilation` to apply a dynamic 1-pixel safety buffer along shorelines. This physically isolates and removes wave-breaking surf zones and bright intertidal mudflats, eliminating false hurricane-force wind artifacts.
-* **Empirical dB-Space Calibration:** Applies a custom -4.0 dB calibration offset to the raw VV backscatter to correct for persistent baseline brightness over the Arabian Sea. The inversion engine operates natively in logarithmic (decibel) space to suppress exponential speed overestimations near the swath edges.
+* **Dynamic Earth Engine Mosaicking:** Programmatically bypasses Google Earth Engine's 10 MB payload restrictions. The pipeline uses flat 2D raster extractions via `sampleRectangle` with dynamic spatial tiling and strict temporal matching to prevent memory allocation failures over long swaths.
+* **Morphological Coastal Buffering:** Employs `scipy.ndimage.binary_dilation` to apply a dynamic 1 pixel safety buffer along shorelines. This physically isolates and removes wave-breaking surf zones and bright intertidal mudflats, eliminating false hurricane force wind artifacts.
+* **Empirical dB Space Calibration:** Applies a custom -4.0 dB calibration offset to the raw VV backscatter to correct for persistent baseline brightness over the Arabian Sea. The inversion engine operates natively in logarithmic space to suppress exponential speed overestimations near the swath edges.
 * **Automated Data Persistence:** Intercepts computed wind fields and automatically serializes them into structured `.json` files for seamless downstream integration with Jupyter Notebooks, `cartopy` plotting scripts, or web dashboards.
 
 ---
@@ -35,7 +35,7 @@ This pipeline automates the extraction and processing of high-resolution ocean s
 │   └── demo_gujarat.py         # Script to plot raw SAR-derived wind vector fields
 ├── utils/
 │   ├── preprocessing.py        # Normalization and quality control utilities
-│   ├── validation_math.py      # Validation metrics (MAE, RMSE, Speed Bias)
+│   ├── validation_math.py      # Validation metrics
 │   ├── visualization.py        # Cartopy and Matplotlib mapping wrappers
 │   └── windspeed.py            # Core wind vector and GMF mathematical equations
 ├── app.py                      # Interactive Streamlit frontend dashboard
@@ -127,7 +127,7 @@ print(f"Status Code: {response.status_code}")
 
 Once the pipeline outputs a successful execution payload, data is written directly to the `data/` directory. You can visualize the results using two distinct operational mapping frameworks:
 
-* **Micro-Scale Vector Mapping:** Run `notebooks/demo_gujarat.py` to generate an un-smoothed, high-resolution vector plot. This mapping technique isolates localized sub-mesoscale atmospheric variations, coastal wind shadowing, and raw convective wind streaks.
+* **Micro-Scale Vector Mapping:** Run `notebooks/demo_gujarat.py` to generate an unsmoothed, high resolution vector plot. This mapping technique isolates localized sub-mesoscale atmospheric variations, coastal wind shadowing, and raw convective wind streaks.
 * **Continuous Surface Mapping:** Run the `run_plot.py` script to apply cubic grid interpolation across the sparse data points. This creates an operational meteorological field chart complete with continuous color gradients:
 ```bash
 python run_plot.py data/gujarat_wind_2024-02-09.json output_map.png
