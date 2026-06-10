@@ -2,18 +2,18 @@
 
 ## Project Aim
 
-This pipeline automates the extraction and processing of high resolution ocean surface wind fields from Sentinel 1 Synthetic Aperture Radar imagery. Designed specifically for complex coastal zones, the system leverages a PyTorch-based Deep Residual Network and a modified CMOD5 Geophysical Model Function to invert raw radar backscatter into accurate meteorological wind vector fields.
+This pipeline automates the extraction and processing of high resolution ocean surface wind fields from Sentinel 1 Synthetic Aperture Radar imagery. Designed specifically for complex coastal zones, the system leverages a PyTorch based Deep Residual Network and a modified CMOD5 Geophysical Model Function to invert raw radar backscatter into accurate meteorological wind vector fields.
 
-### Key Scientific & Engineering Features
+### Key Scientific and Engineering Features
 
 * **Dynamic Earth Engine Mosaicking:** Programmatically bypasses GEE's 10 MB payload restrictions. The pipeline uses flat 2D raster extractions via `sampleRectangle` with dynamic spatial tiling and strict temporal matching to prevent memory allocation failures over long swaths.
 * **Morphological Coastal Buffering:** Employs `scipy.ndimage.binary_dilation` to apply a dynamic one pixel safety buffer along shorelines. This physically isolates and removes wave breaking surf zones and bright intertidal mudflats, eliminating false hurricane force wind artifacts.
-* **Empirical dB Space Calibration:** Applies a custom -4.0 dB calibration offset to the raw VV backscatter to correct for persistent baseline brightness over the Arabian Sea. The inversion engine operates natively in logarithmic space to suppress exponential speed overestimations near the swath edges.
+* **Empirical dB Space Calibration:** Applies a custom calibration offset to the raw VV backscatter to correct for persistent baseline brightness over the Arabian Sea. The inversion engine operates natively in logarithmic space to suppress exponential speed overestimations near the swath edges.
 * **Automated Data Persistence:** Intercepts computed wind fields and automatically serializes them into structured `.json` files for seamless downstream integration with Jupyter Notebooks, `cartopy` plotting scripts, or web dashboards.
 
 ---
 
-## 📂 Project Structure
+## Project Structure
 
 ```text
 ├── api/
@@ -21,7 +21,7 @@ This pipeline automates the extraction and processing of high resolution ocean s
 │   └── schemas.py              # Data validation and Pydantic API schemas
 ├── config/
 │   └── settings.py             # Global configurations and GEE environment tokens
-├── data/                       # Auto-generated JSON pipeline outputs
+├── data/                       # Auto-generated JSON pipeline outputs not here but will appear after you have ran the program
 │   └── gujarat_wind_...json    # Example serialized wind vector data
 ├── gee/
 │   └── fetch_sentinel1.py      # Earth Engine data extraction and patch slicing
@@ -32,7 +32,7 @@ This pipeline automates the extraction and processing of high resolution ocean s
 │   ├── resnet.py               # PyTorch M64RN4 architecture definition
 │   └── train.py                # Model training loop and dataset wrappers
 ├── notebooks/
-│   └── demo_gujarat.py         # Script to plot raw SAR-derived wind vector fields
+│   └── demo_gujarat.py         # Script to plot raw SAR derived wind vector fields
 ├── utils/
 │   ├── preprocessing.py        # Normalization and quality control utilities
 │   ├── validation_math.py      # Validation metrics
@@ -47,7 +47,7 @@ This pipeline automates the extraction and processing of high resolution ocean s
 
 ---
 
-## Installation & Setup
+## Installation and Setup
 
 **1. Clone the Repository**
 
@@ -76,11 +76,11 @@ earthengine authenticate
 
 ## Running the Pipeline
 
-To run the full end-to-end interactive stack, you will need to open two separate terminal sessions.
+To run the full end to end interactive stack, you will need to open two separate terminal sessions.
 
 ### Step 1: Initialize the FastAPI Backend Server
 
-In your first terminal tab, start the processing engine using Uvicorn. The `--reload` flag ensures code adjustments are synced in real-time.
+In your first terminal tab, start the processing engine using Uvicorn. The `--reload` flag ensures code adjustments are synced in real time.
 
 ```bash
 uvicorn api.main:app --reload
@@ -118,7 +118,7 @@ print(f"Status Code: {response.status_code}")
 ```
 ---
 
-## Data Visualization & Output Formats
+## Data Visualization and Output Formats
 
 Once the pipeline outputs a successful execution payload, data is written directly to the `data/` directory. You can visualize the results using two distinct operational mapping frameworks:
 
@@ -132,7 +132,7 @@ python run_plot.py data/gujarat_wind_2024-02-09.json output_map.png
 
 ---
 
-## Known Constraints & Operational Limits
+## Known Constraints and Operational Limits
 
 * **GEE Payload Constraints:** Attempting to ingest bounding boxes broader than 1.5° × 1.5° at a strict 100 m pixel resolution within a single request will trigger an Earth Engine memory limit error (`Computed value is too large`).
 * **Macro-Scale Processing Workaround:** To map the entirety of the 600 km Gujarat coastline simultaneously without exhausting server memory allocation, partition large regions into discrete 1° × 1° spatial tiles, process each step sequentially through the API, and mosaic the resulting output arrays.
